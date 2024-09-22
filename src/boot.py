@@ -23,6 +23,9 @@ def do_connect():
         while not sta_if.isconnected():
             pass
     print("\nnetwork config:", sta_if.ifconfig())
+    print("\nMAC Address:", ubinascii.hexlify(wlan_mac).decode())
+    print("Connecting to SSID:", SSID)
+
 
 
 print("\n\n\nFlood Sensor Booting Up...")
