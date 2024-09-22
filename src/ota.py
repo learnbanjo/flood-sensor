@@ -22,7 +22,7 @@ class OTAUpdater:
         if self.version_file in os.listdir():
             with open(self.version_file) as f:
                 self.current_version = json.load(f)['version']
-            version_message = "Current device firmware version is " + self.current_version
+            version_message = "Current " + self.filename + " is " + self.current_version
             print(version_message)
 
         else:
@@ -124,7 +124,7 @@ class OTAUpdater:
         data = json.loads(response.text)
        
         self.latest_version = data['oid']                   # Access directly the id managed by GitHub
-        latest_version_message = "Latest version is: " + self.latest_version
+        latest_version_message = "Latest " + self.filename + " version is: " + self.latest_version
         print(latest_version_message)
         
         # compare versions
