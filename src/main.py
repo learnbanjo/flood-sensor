@@ -17,9 +17,20 @@ s = socket.socket()
 s.bind(addr)
 s.listen(1)
 
+def free(full=False):
+  gc.collect()
+  F = gc.mem_free()
+  A = gc.mem_alloc()
+  T = F+A
+  P = '{0:.2f}%'.format(F/T*100)
+  if not full: return P
+  else : return ('Total:{0} Free:{1} ({2})'.format(T,F,P))
+
 while True:
     cl, addr = s.accept()
     print("client connected from", addr)
+    print(free(full=True))
+
     cl_file = cl.makefile("rwb", 0)
     while True:
         line = cl_file.readline()
