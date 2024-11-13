@@ -1,6 +1,7 @@
 import network
 import urequests
 import os
+import gc
 import json
 import machine
 from time import sleep
@@ -67,10 +68,14 @@ class OTAUpdater:
         # Fetch the latest code from the repo.
         response = urequests.get(self.firmware_url)
         if response.status_code == 200:
-    
-            # Save the fetched code to memory
-            self.latest_code = response.text
-            return True
+            gc.collect()
+            try:
+                # Save the fetched code to memory
+                self.latest_code = response.text
+                return True
+            except Exception as e:
+                print('Failed to fetch latest code:', e)
+                return False
         
         elif response.status_code == 404:
             print('Firmware not found.')
