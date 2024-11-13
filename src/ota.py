@@ -66,7 +66,7 @@ class OTAUpdater:
         """ Fetch the latest code from the repo, returns False if not found."""
         
         # Fetch the latest code from the repo.
-        response = urequests.get(self.firmware_url)
+        response = urequests.get(self.firmware_url, timeout=20)
         if response.status_code == 200:
             gc.collect()
             try:
@@ -126,11 +126,12 @@ class OTAUpdater:
         """ Check if updates are available."""
         
         # Connect to Wi-Fi
-        self.connect_wifi()
+        # self.connect_wifi()
 
         print('Checking for latest version...')
         headers = {"accept": "application/json"} 
-        response = urequests.get(self.version_url, headers=headers)
+        gc.collect()
+        response = urequests.get(self.version_url, headers=headers, timeout=5)
         
         data = json.loads(response.text)
        
