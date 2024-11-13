@@ -5,6 +5,8 @@ import json
 import machine
 from time import sleep
 
+VERSION = "1.0"
+
 class OTAUpdater:
     """ This class handles OTA updates. It connects to the Wi-Fi, checks for updates, downloads and installs them."""
     def __init__(self, ssid, password, repo_url, filename):
@@ -18,14 +20,18 @@ class OTAUpdater:
         self.version_url = self.process_version_url(repo_url, filename)     # Process the new version url
         self.firmware_url = repo_url + filename                             # Removal of the 'main' branch to allow different sources
 
+        print("Version URL is ", self.version_url)
+        print("Firmware URL is ", self.firmware_url)
+
         # get the current version (stored in version.json)
         if self.version_file in os.listdir():
             with open(self.version_file) as f:
                 self.current_version = json.load(f)['version']
             version_message = "Current " + self.filename + " is " + self.current_version
-            print(version_message)
+            print("version message ", version_message)
 
         else:
+            print("No version file")
             self.current_version = "0"
             # save the current version
             with open(self.version_file, 'w') as f:
