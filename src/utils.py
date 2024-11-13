@@ -1,4 +1,5 @@
 VERSION = "1.0"
+import gc
 
 def qs_parse(qs):
  

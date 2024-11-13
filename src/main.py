@@ -80,6 +80,8 @@ while True:
             ota_updater.download_and_install_update_if_available()
             ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "utils.py")
             ota_updater.download_and_install_update_if_available()
+            cl.close()
+            machine.reset()  # Reset the device to run the new code.
         except Exception as err:
             print("OTA failed.")
             print("Unexpected error:", err, " type:", type(err))

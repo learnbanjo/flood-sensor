@@ -150,6 +150,6 @@ class OTAUpdater:
             if self.fetch_latest_code():
                 self.update_no_reset()
 #                self.update_and_reset()
-                self.reset()
+#                self.reset()
         else:
             print('No new updates available.')
