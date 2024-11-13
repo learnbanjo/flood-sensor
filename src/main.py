@@ -1,54 +1,74 @@
-from DEVICE_CONFIG import DEVICE_NAME, SSID, PASSWORD, OTA_ENABLED
+from DEVICE_CONFIG import DEVICE_NAME, DEVICE_TYPE, SSID, PASSWORD
+from DEVICE_CONFIG import ANALOG_SENSOR_PIN, DIGITAL_SENSOR_PIN
+
 # DEVICE_NAME default depends on the device
 # SSID default depends on the device
 # PASSWORD default is none ""
 # OTA_ENABLED default is "false"
 
-SENSOR_PIN = 15
+if ANALOG_SENSOR_PIN != "":
+    from machine import ADC
+    analogSensor = ADC(ANALOG_SENSOR_PIN)
+else:
+    analogSensor = ""
 
-from machine import Pin
-dry = Pin(SENSOR_PIN, Pin.IN, Pin.PULL_UP)
+if DIGITAL_SENSOR_PIN != "":
+    from machine import Pin
+    digigalSensor = Pin(DIGITAL_SENSOR_PIN, Pin.IN, Pin.PULL_UP)
+else:
+    digigalSensor = ""
 
 import socket
+import utils
+
+URLKEY_OTA = "ota"
+VERSION = "1.0"
+
+analogSensor_value = ""
+digitalSensor_value = ""
+URLParameters = {}
 
 addr = socket.getaddrinfo("0.0.0.0", 80)[0][-1]
-
 s = socket.socket()
 s.bind(addr)
 s.listen(1)
 
-def free(full=False):
-  gc.collect()
-  F = gc.mem_free()
-  A = gc.mem_alloc()
-  T = F+A
-  P = '{0:.2f}%'.format(F/T*100)
-  if not full: return P
-  else : return ('Total:{0} Free:{1} ({2})'.format(T,F,P))
-
 while True:
     cl, addr = s.accept()
     print("client connected from", addr)
-    print(free(full=True))
 
     cl_file = cl.makefile("rwb", 0)
+    URLParameters = {}
     while True:
         line = cl_file.readline()
         if not line or line == b"\r\n":
             break
-    if dry.value() == 1:
-        wd = "dry"
-    else:
-        wd = "wet"
+        else:
+            HTTPOptions = line.split()
+            if len(HTTPOptions) > 2:
+                if (HTTPOptions[0] == b"GET"):
+                    URLOptions = str(HTTPOptions[1].decode()).split('?')
+                    if len(URLOptions) >= 2:
+                        URLParameters = utils.qs_parse(URLOptions[1])
+
+    if (analogSensor != ""):
+        analogSensor_value = analogSensor.read()
+    if (digigalSensor != ""):
+        digitalSensor_value = digigalSensor.value()
+
     cl.send("HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n")
     message = "{"
     message = message + "\"deviceName\":\"" + DEVICE_NAME + "\""
-    message = message + ",\"AP\":\"" + SSID + "\""    
-    message = message + ",\"state\":\"" + wd + "\""    
+    message = message + ",\"deviceType\":\"" + DEVICE_TYPE + "\""
+    message = message + ",\"AP\":\"" + SSID + "\""
+    if ANALOG_SENSOR_PIN != "":
+        message = message + ",\"analogSensorReading\":\"" + str(analogSensor_value) + "\""
+    if DIGITAL_SENSOR_PIN != "":
+        message = message + ",\"digitalSensorReading\":\"" + str(digitalSensor_value) + "\""
     message = message + "}"
     cl.send(message)
 
-    if (OTA_ENABLED == "true"):
+    if (URLParameters.get(URLKEY_OTA, "False") == "True"):
         from ota import OTAUpdater
         firmware_url = "https://raw.githubusercontent.com/learnbanjo/flood-sensor/main/src/"
         try:
