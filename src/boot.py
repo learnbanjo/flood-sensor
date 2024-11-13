@@ -4,6 +4,9 @@ import os
 import ubinascii
 from DEVICE_CONFIG import SSID, PASSWORD, DEVICE_NAME
 
+VERSION = "1.0"
+
+
 gc.collect()
 
 
@@ -28,7 +31,7 @@ def do_connect():
 
 
 
-print("\n\n\nFlood Sensor Booting Up...")
+print("\n\n\nSensor Booting Up...")
 print("\nmircopython version:", os.uname())
 print("\nDevice Name:", DEVICE_NAME)
 
