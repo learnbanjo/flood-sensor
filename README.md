@@ -2,7 +2,7 @@
 
 This MicroPython code is written for ESP3266 connecting to a digital or analog sensor.
 It has a simple HTTP server responding to requests with the state of the sensor.
-It supports code when a new version becomes available.
+It supports code update when a new version becomes available.
 
 ---
 # Deply the code
