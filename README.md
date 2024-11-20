@@ -1,8 +1,8 @@
 # Flood Sensor
 
-This MicroPython code is writting for ESP3266 connecting to a flood sensor
-It has a simple HTTP server responds to request with web/dry state
-It will automatically updates code when a new version becomes available
+This MicroPython code is written for ESP3266 connecting to a digital or analog sensor.
+It has a simple HTTP server responding to requests with the state of the sensor.
+It supports code when a new version becomes available.
 
 ---
 # Deply the code
