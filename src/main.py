@@ -41,58 +41,58 @@ try:
         cl, addr = s.accept()
         print("client connected from", addr)
 
-        cl_file = cl.makefile("rwb", 0)
-        URLParameters = {}
-        while True:
-            line = cl_file.readline()
-            if not line or line == b"\r\n":
-                break
-            else:
-                HTTPOptions = line.split()
-                if len(HTTPOptions) > 2:
-                    if (HTTPOptions[0] == b"GET"):
-                        URLOptions = str(HTTPOptions[1].decode()).split('?')
-                        if len(URLOptions) >= 2:
-                            URLParameters = utils.qs_parse(URLOptions[1])
+        with cl:
+            # Receive the request from the client
+            request = cl.recv(1024).decode('utf-8')
+            print(f"Received request:\n{request}")
 
-        if (analogSensor != ""):
-            analogSensor_value = analogSensor.read()
-        if (digigalSensor != ""):
-            digitalSensor_value = digigalSensor.value()
+            lines = request.splitlines()
+            HTTPOptions = lines[0].split()
+            URLParameters = {}
+            if len(HTTPOptions) > 2:
+                if (HTTPOptions[0] == "GET"):
+                    URLOptions = HTTPOptions[1].split('?')
+                    if len(URLOptions) >= 2:
+                        URLParameters = utils.qs_parse(URLOptions[1])
 
-        cl.send("HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n")
-        message = "{"
-        message = message + "\"deviceName\":\"" + DEVICE_NAME + "\""
-        message = message + ",\"deviceType\":\"" + DEVICE_TYPE + "\""
-        message = message + ",\"AP\":\"" + SSID + "\""
-        if ANALOG_SENSOR_PIN != "":
-            message = message + ",\"analogSensorReading\":\"" + str(analogSensor_value) + "\""
-        if DIGITAL_SENSOR_PIN != "":
-            message = message + ",\"digitalSensorReading\":\"" + str(digitalSensor_value) + "\""
-        message = message + "}"
-        cl.send(message)
+            if (analogSensor != ""):
+                analogSensor_value = analogSensor.read()
+            if (digigalSensor != ""):
+                digitalSensor_value = digigalSensor.value()
 
-        if (URLParameters.get(URLKEY_OTA, "False") == "True"):
-            from ota import OTAUpdater
-            firmware_url = "https://raw.githubusercontent.com/learnbanjo/flood-sensor/main/src/"
-            try:
-                ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "ota.py")
-                ota_updater.download_and_install_update_if_available()
-                ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "main.py")
-                ota_updater.download_and_install_update_if_available()
-                ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "boot.py")
-                ota_updater.download_and_install_update_if_available()
-                ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "utils.py")
-                ota_updater.download_and_install_update_if_available()
-                cl.send('<p>OTA completed. Rebooting...')
-            except Exception as err:
-                print("OTA failed.")
-                print("Unexpected error:", err, " type:", type(err))
-                cl.send('<p>OTA failed.')
-                cl.send("Unexpected errorr=", err, " type=", type(err))
-            cl.close()
-            time.sleep(5)
-            machine.reset()  # Reset the device to run the new code.
+            message = ("HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n")
+            message = message + "{"
+            message = message + "\"deviceName\":\"" + DEVICE_NAME + "\""
+            message = message + ",\"deviceType\":\"" + DEVICE_TYPE + "\""
+            message = message + ",\"AP\":\"" + SSID + "\""
+            if ANALOG_SENSOR_PIN != "":
+                message = message + ",\"analogSensorReading\":\"" + str(analogSensor_value) + "\""
+            if DIGITAL_SENSOR_PIN != "":
+                message = message + ",\"digitalSensorReading\":\"" + str(digitalSensor_value) + "\""
+            message = message + "}"
+            cl.sendall(message.encode('utf-8'))
+
+            if (URLParameters.get(URLKEY_OTA, "False") == "True"):
+                from ota import OTAUpdater
+                firmware_url = "https://raw.githubusercontent.com/learnbanjo/flood-sensor/main/src/"
+                try:
+                    ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "ota.py")
+                    ota_updater.download_and_install_update_if_available()
+                    ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "main.py")
+                    ota_updater.download_and_install_update_if_available()
+                    ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "boot.py")
+                    ota_updater.download_and_install_update_if_available()
+                    ota_updater = OTAUpdater(SSID, PASSWORD, firmware_url, "utils.py")
+                    ota_updater.download_and_install_update_if_available()
+                    cl.send('<p>OTA completed. Rebooting...')
+                except Exception as err:
+                    print("OTA failed.")
+                    print("Unexpected error:", err, " type:", type(err))
+                    cl.send('<p>OTA failed.')
+                    cl.send("Unexpected errorr=", err, " type=", type(err))
+                cl.close()
+                time.sleep(5)
+                machine.reset()  # Reset the device to run the new code.
         cl.close()
 except KeyboardInterrupt:
     raise
