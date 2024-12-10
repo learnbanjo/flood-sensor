@@ -59,7 +59,7 @@ try:
             if (digigalSensor != ""):
                 digitalSensor_value = digigalSensor.value()
 
-            message = ("HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n")
+            message = ("HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n")
             message = message + "{"
             message = message + "\"deviceName\":\"" + DEVICE_NAME + "\""
             message = message + ",\"deviceType\":\"" + DEVICE_TYPE + "\""
