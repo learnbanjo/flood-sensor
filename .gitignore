@@ -2,4 +2,4 @@
 .venv
 __pycache__
 *.pyc
-src/DEVICE_CONFIG.py
+src/DEVICE_CONFIG.py.idea/

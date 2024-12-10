@@ -40,13 +40,12 @@ try:
     while True:
         cl, addr = s.accept()
         print("client connected from", addr)
-
-        with cl:
+        try:
             # Receive the request from the client
             request = cl.recv(1024).decode('utf-8')
             print(f"Received request:\n{request}")
 
-            lines = request.splitlines()
+            lines = request.split()
             HTTPOptions = lines[0].split()
             URLParameters = {}
             if len(HTTPOptions) > 2:
@@ -93,6 +92,8 @@ try:
                 cl.close()
                 time.sleep(5)
                 machine.reset()  # Reset the device to run the new code.
+        finally:
+            cl.close
         cl.close()
 except KeyboardInterrupt:
     raise
