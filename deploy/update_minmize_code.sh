@@ -1,9 +1,6 @@
 #this should be run in Python 2 environment
 #since pyminifier is not supported in Python 3
 
-echo copying DEVICE_CONFIG.py
-cp ../DEVICE_CONFIG.py .
-echo done
 echo copying main_mqtt2.py
 pyminifier --obfuscate-variables ../src/main_mqtt2.py > main.py
 echo done
