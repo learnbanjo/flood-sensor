@@ -1,12 +1,12 @@
-I="1.0"
+l="1.0"
 import gc
 def qs_parse(qs):
  m={}
- E=qs.split("&")
- for j in E:
-  A=j.split("=")
-  if len(A)==2:
-   m[A[0]]=A[1]
+ P=qs.split("&")
+ for r in P:
+  i=r.split("=")
+  if len(i)==2:
+   m[i[0]]=i[1]
  return m
 def free(full=False):
  gc.collect()
