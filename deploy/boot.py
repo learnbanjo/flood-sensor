@@ -4,31 +4,31 @@ import os
 import time
 import ubinascii
 from DEVICE_CONFIG import SSID,PASSWORD,DEVICE_NAME
-g="1.0"
+y="1.0"
 gc.collect()
 def do_connect():
  import network
- R=network.WLAN(network.AP_IF)
- R.active(False)
- h=network.WLAN(network.STA_IF)
- h.active(True)
- s=h.config("mac")
- print("\nMAC Address:",ubinascii.hexlify(s).decode())
- if not h.isconnected():
+ Y=network.WLAN(network.AP_IF)
+ Y.active(False)
+ K=network.WLAN(network.STA_IF)
+ K.active(True)
+ u=K.config("mac")
+ print("\nMAC Address:",ubinascii.hexlify(u).decode())
+ if not K.isconnected():
   print("\nConnecting to network...")
   print("Connecting to SSID:",SSID)
-  h.connect(SSID,PASSWORD)
-  J=0
-  while not h.isconnected():
+  K.connect(SSID,PASSWORD)
+  b=0
+  while not K.isconnected():
    time.sleep(5)
-   J+=5
-   print("Waiting for connection... ",J,"seconds") 
-   if J>30:
+   b+=5
+   print("Waiting for connection... ",b,"seconds") 
+   if b>30:
     print("Connection failed. Rebooting...")
     machine.reset()
    pass
- print("\nnetwork config:",h.ifconfig())
- print("\nMAC Address:",ubinascii.hexlify(s).decode())
+ print("\nnetwork config:",K.ifconfig())
+ print("\nMAC Address:",ubinascii.hexlify(u).decode())
  print("Connecting to SSID:",SSID)
 print("\n\n\nSensor Booting Up...")
 print("\nmircopython version:",os.uname())
