@@ -1,19 +1,15 @@
-import network
 import urequests
 import os
 import gc
 import json
-import machine
-from time import sleep
+#import micropython
 
 VERSION = "1.0"
 
 class OTAUpdater:
     """ This class handles OTA updates. It connects to the Wi-Fi, checks for updates, downloads and installs them."""
-    def __init__(self, ssid, password, repo_url, filename):
+    def __init__(self, repo_url, filename):
         self.filename = filename
-        self.ssid = ssid
-        self.password = password
         self.repo_url = repo_url
         self.version_file = filename + '_' + 'ver.json'
 
@@ -49,18 +45,6 @@ class OTAUpdater:
         version_url = version_url + filename                                       # Add the targeted filename
         
         return version_url
-
-    def connect_wifi(self):
-        """ Connect to Wi-Fi."""
-
-        sta_if = network.WLAN(network.STA_IF)
-        sta_if.active(True)
-        sta_if.connect(self.ssid, self.password)
-        while not sta_if.isconnected():
-            print('.', end="")
-            sleep(0.25)
-        wifi_message = "Connected to WiFi, IP is: " + sta_if.ifconfig()[0]
-        print(wifi_message)
         
     def fetch_latest_code(self)->bool:
         """ Fetch the latest code from the repo, returns False if not found."""
@@ -100,28 +84,7 @@ class OTAUpdater:
 
         # Overwrite the old code.
         os.rename('latest_code.py', self.filename)
-
-    def update_and_reset(self):
-        """ Update the code and reset the device."""
-
-        print('Updating device...', end='')
-
-        # Overwrite the old code.
-        os.rename('latest_code.py', self.filename)  
-
-        # Restart the device to run the new code.
-        print("Restarting device... (don't worry about an error message after this")
-        sleep(0.25)
-        machine.reset()  # Reset the device to run the new code.
         
-    def reset(self):
-        """ Reset the device."""
-
-        # Restart the device to run the new code.
-        print("Restarting device... (don't worry about an error message after this")
-        sleep(0.25)
-        machine.reset()  # Reset the device to run the new code.
-
     def check_for_updates(self):
         """ Check if updates are available."""
         
@@ -129,28 +92,39 @@ class OTAUpdater:
         # self.connect_wifi()
 
         print('Checking for latest version...')
-        headers = {"accept": "application/json"} 
         gc.collect()
+        headers = {"accept": "application/json"} 
+#        micropython.mem_info(True)
+#        print('send request')
+        
         response = urequests.get(self.version_url, headers=headers, timeout=5)
         
+#        print('load response')
         data = json.loads(response.text)
        
         self.latest_version = data['oid']                   # Access directly the id managed by GitHub
-        latest_version_message = "Latest " + self.filename + " version is: " + self.latest_version
-        print(latest_version_message)
+#        latest_version_message = "Latest " + self.filename + " version is: " + self.latest_version
+#        print(latest_version_message)
         
         # compare versions
         newer_version_available = True if self.current_version != self.latest_version else False
-        newer_version_message = "Newer version available: " + str(newer_version_available)
+        newer_version_message = "New ver: " + str(newer_version_available)
         print(newer_version_message)    
         return newer_version_available
     
     def download_and_install_update_if_available(self):
         """ Check for updates, download and install them."""
+        
         if self.check_for_updates():
-            if self.fetch_latest_code():
-                self.update_no_reset()
-#                self.update_and_reset()
-#                self.reset()
+            return self.download_and_install_update()
         else:
             print('No new updates available.')
+            return True
+
+    def download_and_install_update(self):
+        """ Check for updates, download and install them."""
+        if self.fetch_latest_code():
+            self.update_no_reset()
+        else:
+            return False
+        return True
