@@ -1,13 +1,13 @@
-w="1.0"
+H="1.0"
 import gc
 def qs_parse(qs):
- z={}
- I=qs.split("&")
- for Y in I:
-  R=Y.split("=")
-  if len(R)==2:
-   z[R[0]]=R[1]
- return z
+ E={}
+ n=qs.split("&")
+ for u in n:
+  i=u.split("=")
+  if len(i)==2:
+   E[i[0]]=i[1]
+ return E
 def free(full=False):
  gc.collect()
  F=gc.mem_free()
