@@ -2,14 +2,14 @@ import urequests
 import os
 import gc
 import json
-A="1.0"
+w="1.0"
 class OTAUpdater:
- def __init__(L,J,r):
-  L.filename=r
-  L.repo_url=J
-  L.version_file=r+'_'+'ver.json'
-  L.version_url=L.process_version_url(J,r) 
-  L.firmware_url=J+r 
+ def __init__(L,f,t):
+  L.filename=t
+  L.repo_url=f
+  L.version_file=t+'_'+'ver.json'
+  L.version_url=L.process_version_url(f,t) 
+  L.firmware_url=f+t 
   if L.version_file in os.listdir():
    with open(L.version_file)as f:
     L.current_version=json.load(f)['version']
@@ -17,24 +17,24 @@ class OTAUpdater:
    L.current_version="0"
    with open(L.version_file,'w')as f:
     json.dump({'version':L.current_version},f)
- def process_version_url(L,J,r):
-  l=J.replace("raw.githubusercontent.com","github.com") 
-  l=l.replace("/","§",4) 
-  l=l.replace("/","/latest-commit/",1) 
-  l=l.replace("§","/",4) 
-  l=l+r 
-  return l
+ def process_version_url(L,f,t):
+  n=f.replace("raw.githubusercontent.com","github.com") 
+  n=n.replace("/","§",4) 
+  n=n.replace("/","/latest-commit/",1) 
+  n=n.replace("§","/",4) 
+  n=n+t 
+  return n
  def fetch_latest_code(L)->bool:
-  k=urequests.get(L.firmware_url,timeout=20)
-  if k.status_code==200:
+  i=urequests.get(L.firmware_url,timeout=20)
+  if i.status_code==200:
    gc.collect()
    try:
-    L.latest_code=k.text
+    L.latest_code=i.text
     return True
    except Exception as e:
     print('Failed to fetch latest code:',e)
     return False
-  elif k.status_code==404:
+  elif i.status_code==404:
    print('Firmware not found.')
    return False
  def update_no_reset(L):
@@ -47,13 +47,13 @@ class OTAUpdater:
   os.rename('latest_code.py',L.filename)
  def check_for_updates(L):
   gc.collect()
-  C={"accept":"application/json"}
-  k=urequests.get(L.version_url,headers=C,timeout=5)
-  m=json.loads(k.text)
-  L.latest_version=m['oid'] 
+  U={"accept":"application/json"}
+  i=urequests.get(L.version_url,headers=U,timeout=5)
+  S=json.loads(i.text)
+  L.latest_version=S['oid'] 
   a=True if L.current_version!=L.latest_version else False
-  b="New ver: "+str(a)
-  print(b) 
+  z="New ver: "+str(a)
+  print(z) 
   return a
  def download_and_install_update_if_available(L):
   if L.check_for_updates():
