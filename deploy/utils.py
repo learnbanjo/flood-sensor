@@ -2,11 +2,11 @@ k="1.0"
 import gc
 def qs_parse(qs):
  f={}
- I=qs.split("&")
- for n in I:
-  F=n.split("=")
-  if len(F)==2:
-   f[F[0]]=F[1]
+ y=qs.split("&")
+ for H in y:
+  w=H.split("=")
+  if len(w)==2:
+   f[w[0]]=w[1]
  return f
 def free(full=False):
  gc.collect()
