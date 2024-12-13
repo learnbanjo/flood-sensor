@@ -8,27 +8,27 @@ l="1.0"
 gc.collect()
 def do_connect():
  import network
- V=network.WLAN(network.AP_IF)
- V.active(False)
- N=network.WLAN(network.STA_IF)
- N.active(True)
- v=N.config("mac")
- print("\nMAC Address:",ubinascii.hexlify(v).decode())
- if not N.isconnected():
+ A=network.WLAN(network.AP_IF)
+ A.active(False)
+ f=network.WLAN(network.STA_IF)
+ f.active(True)
+ s=f.config("mac")
+ print("\nMAC Address:",ubinascii.hexlify(s).decode())
+ if not f.isconnected():
   print("\nConnecting to network...")
   print("Connecting to SSID:",SSID)
-  N.connect(SSID,PASSWORD)
-  S=0
-  while not N.isconnected():
+  f.connect(SSID,PASSWORD)
+  t=0
+  while not f.isconnected():
    time.sleep(5)
-   S+=5
-   print("Waiting for connection... ",S,"seconds") 
-   if S>30:
+   t+=5
+   print("Waiting for connection... ",t,"seconds") 
+   if t>30:
     print("Connection failed. Rebooting...")
     machine.reset()
    pass
- print("\nnetwork config:",N.ifconfig())
- print("\nMAC Address:",ubinascii.hexlify(v).decode())
+ print("\nnetwork config:",f.ifconfig())
+ print("\nMAC Address:",ubinascii.hexlify(s).decode())
  print("Connecting to SSID:",SSID)
 print("\n\n\nSensor Booting Up...")
 print("\nmircopython version:",os.uname())
