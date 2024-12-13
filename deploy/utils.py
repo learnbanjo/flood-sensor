@@ -1,13 +1,13 @@
-c="1.0"
+p="1.0"
 import gc
 def qs_parse(qs):
- E={}
- u=qs.split("&")
- for R in u:
-  N=R.split("=")
-  if len(N)==2:
-   E[N[0]]=N[1]
- return E
+ A={}
+ g=qs.split("&")
+ for i in g:
+  V=i.split("=")
+  if len(V)==2:
+   A[V[0]]=V[1]
+ return A
 def free(full=False):
  gc.collect()
  F=gc.mem_free()
@@ -16,4 +16,5 @@ def free(full=False):
  P='{0:.2f}%'.format(F/T*100)
  if not full:return P
  else:return('Total:{0} Free:{1} ({2})'.format(T,F,P))
+# Created by pyminifier (https://github.com/liftoff/pyminifier)
 
