@@ -1,13 +1,13 @@
-I="1.0"
+k="1.0"
 import gc
 def qs_parse(qs):
- J={}
- K=qs.split("&")
- for d in K:
-  b=d.split("=")
-  if len(b)==2:
-   J[b[0]]=b[1]
- return J
+ S={}
+ U=qs.split("&")
+ for a in U:
+  m=a.split("=")
+  if len(m)==2:
+   S[m[0]]=m[1]
+ return S
 def free(full=False):
  gc.collect()
  F=gc.mem_free()
