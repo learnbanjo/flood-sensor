@@ -6,94 +6,94 @@ from umqtt.simple import MQTTClient
 import ubinascii
 import machine
 import json
-p="1.0"
-E=5
-y="GenericSensor/SensorData"
-T="OTA/OTARequest"
-N="OTA/OTAResponse"
+F="1.0"
+G=5
+Q="GenericSensor/SensorData"
+m="OTA/OTARequest"
+q="OTA/OTAResponse"
 if ANALOG_SENSOR_PIN!="":
  from machine import ADC
- G=ADC(ANALOG_SENSOR_PIN)
+ V=ADC(ANALOG_SENSOR_PIN)
 else:
- G=""
+ V=""
 if DIGITAL_SENSOR_PIN!="":
  from machine import Pin
- g=Pin(DIGITAL_SENSOR_PIN,Pin.IN,Pin.PULL_UP)
+ i=Pin(DIGITAL_SENSOR_PIN,Pin.IN,Pin.PULL_UP)
 else:
- g=""
-c=mqtt_broker_address
+ i=""
+K=mqtt_broker_address
 R=ubinascii.hexlify(DEVICE_NAME)
-v=b'OTA/OTARequest'
-K=b'GenericSensor/SensorData'
-C=0
-m=MQTT_PUBLISH_INTERVAL
+p=b'OTA/OTARequest'
+B=b'GenericSensor/SensorData'
+E=0
+j=MQTT_PUBLISH_INTERVAL
 def sub_cb(topic,msg):
  print((topic,msg))
  if topic==b'OTA/OTARequest':
   print('ESP received OTA message')
-  s="\"deviceType\":\""+DEVICE_TYPE+"\""
-  i="\"deviceName\":\""+DEVICE_NAME+"\""
-  w="\"deviceName\":\"*\"" 
-  F=msg.decode()
-  print('ESP received OTA message ',F)
-  if s in F and(i in F or w in F):
-   k=json.loads(F)
+  a="\"deviceType\":\""+DEVICE_TYPE+"\""
+  N="\"deviceName\":\""+DEVICE_NAME+"\""
+  o="\"deviceName\":\"*\"" 
+  W=msg.decode()
+  print('ESP received OTA message ',W)
+  if a in W and(N in W or o in W):
+   X=json.loads(W)
    from ota import OTAUpdater
    f="https://raw.githubusercontent.com/learnbanjo/flood-sensor/refs/heads/deploy-test/deploy/"
-   u=k.get("otafiles")
-   A=True
-   F=DEVICE_NAME+" OTA: "+u
+   h=X.get("otafiles")
+   l=True
+   W=DEVICE_NAME+" OTA: "+h
    try:
-    M=OTAUpdater(f,u)
-    if M.check_for_updates():
-     if M.download_and_install_update():
-      F+=" updated"
+    b=OTAUpdater(f,h)
+    if b.check_for_updates():
+     if b.download_and_install_update():
+      W+=" updated"
      else:
-      F+=" update failed"
+      W+=" update failed"
     else:
-     F+=" up-to-date" 
-     A=False
-   except Exception as j:
-    F+=" err:"+str(j)+" type:"+str(type(j))
+     W+=" up-to-date" 
+     l=False
+   except Exception as k:
+    W+=" err:"+str(k)+" type:"+str(type(k))
    finally:
-    print(F)
-    r.publish(N,F)
+    print(W)
+    D.publish(q,W)
     time.sleep(5)
-    if A:
+    if l:
      machine.reset() 
 def connect_and_subscribe():
- global R,c,v
- r=MQTTClient(R,c)
- r.set_callback(sub_cb)
- r.connect()
- r.subscribe(v)
- print('Connected to %s MQTT broker, subscribed to %s topic'%(c,v))
- return r
+ global R,K,p
+ D=MQTTClient(R,K)
+ D.set_callback(sub_cb)
+ D.connect()
+ D.subscribe(p)
+ print('Connected to %s MQTT broker, subscribed to %s topic'%(K,p))
+ return D
 def restart_and_reconnect():
  print('Failed to connect to MQTT broker. Reconnecting...')
  time.sleep(10)
  machine.reset()
 def create_sensor_message(error=""):
- global G
- global g
- F="{\"devNm\":\""+DEVICE_NAME+"\",\"devTy\":\""+DEVICE_TYPE+"\",\"AP\":\""+SSID+"\""
- if(G!=""):
-  F=F+",\"AnaR\":\""+str(G.read())+"\""
- if(g!=""):
-  F=F+",\"DigR\":\""+str(g.value())+"\""
+ global V
+ global i
+ W="{\"devNm\":\""+DEVICE_NAME+"\",\"devTy\":\""+DEVICE_TYPE+"\",\"AP\":\""+SSID+"\""
+ if(V!=""):
+  W=W+",\"AnaR\":\""+str(V.read())+"\""
+ if(i!=""):
+  W=W+",\"DigR\":\""+str(i.value())+"\""
  if error!="":
-  F=F+",\"err\":\""+error+"\""
- return F+"}"
+  W=W+",\"err\":\""+error+"\""
+ return W+"}"
 try:
- r=connect_and_subscribe()
+ D=connect_and_subscribe()
 except OSError as e:
  restart_and_reconnect()
 while True:
  try:
-  r.check_msg()
-  if(time.time()-C)>m:
-   r.publish(K,create_sensor_message())
-   C=time.time()
+  D.check_msg()
+  if(time.time()-E)>j:
+   D.publish(B,create_sensor_message())
+   E=time.time()
  except OSError as e:
   restart_and_reconnect()
 # Created by pyminifier (https://github.com/liftoff/pyminifier)
