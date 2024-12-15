@@ -1,4 +1,4 @@
-from DEVICE_CONFIG import DEVICE_NAME, DEVICE_TYPE, SSID
+from DEVICE_CONFIG import DEVICE_NAME, DEVICE_TYPE, SSID, DEVICE_LOCATION
 from DEVICE_CONFIG import ANALOG_SENSOR_PIN, DIGITAL_SENSOR_PIN
 from DEVICE_CONFIG import mqtt_broker_address, mqtt_broker_port, mqtt_keep_alive_time, MQTT_PUBLISH_INTERVAL
 
@@ -12,9 +12,10 @@ VERSION = "1.0"
 MQTT_CHECK_INTERVAL = 5
 
 # Define topics
-GenericSensorReportTopic = "GenericSensor/SensorData"
-OTARequestTopic = "OTA/OTARequest"
-OTAResponseTopic = "OTA/OTAResponse"
+GenericSensorReportTopic = "pBv1.0/flood_sensors"
+OTARequestTopic = "pBv1.0/flood_sensors/DCMD"
+OTAResponseTopic = "pBv1.0/flood_sensors/DDATA/" + DEVICE_LOCATION + "/" + DEVICE_NAME
+
 
 if ANALOG_SENSOR_PIN != "":
     from machine import ADC
@@ -31,24 +32,25 @@ else:
 mqtt_server = mqtt_broker_address
 
 client_id = ubinascii.hexlify(DEVICE_NAME)
-topic_sub = b'OTA/OTARequest'
-topic_pub = b'GenericSensor/SensorData'
-
+topic_sub = b'pBv1.0/flood_sensors/DCMD'
+topic_pub = b'pBv1.0/flood_sensors/DDATA/' + DEVICE_LOCATION + '/' + DEVICE_NAME
+print (topic_pub)
 last_message = 0
 message_interval = MQTT_PUBLISH_INTERVAL
 
 def sub_cb(topic, msg):
   print((topic, msg))
-  if topic == b'OTA/OTARequest':
-    print('ESP received OTA message')
-
-    typeString = "\"deviceType\":\"" + DEVICE_TYPE + "\""
+  if topic == b'pBv1.0/flood_sensors/DCMD':
+    print('ESP received DCMD message')
+    cmdOTAString = "\"name\":\"OTA\""
+    cmdStatusString = "\"name\":\"status\""
+    # typeString = "\"deviceType\":\"" + DEVICE_TYPE + "\""
     nameString = "\"deviceName\":\"" + DEVICE_NAME + "\""
     allString = "\"deviceName\":\"*\"" 
     message = msg.decode()
-    print('ESP received OTA message ', message)
 
-    if typeString in message and (nameString in message or allString in message):
+    if cmdOTAString in message and (nameString in message or allString in message):
+        print('ESP received CMD message: OTA')
         data = json.loads(message)
         from ota import OTAUpdater
         firmware_url = "https://raw.githubusercontent.com/learnbanjo/flood-sensor/refs/heads/deploy-test/deploy/"
@@ -74,6 +76,11 @@ def sub_cb(topic, msg):
             time.sleep(5)
             if rebootneeded:
                 machine.reset()  # Reset the device to run the new code.
+    elif cmdStatusString in message:
+        print('ESP received CMD message: status')
+        client.publish(topic_pub, create_sensor_message())
+
+
 
 def connect_and_subscribe():
   global client_id, mqtt_server, topic_sub
