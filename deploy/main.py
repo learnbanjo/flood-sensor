@@ -6,99 +6,99 @@ from umqtt.simple import MQTTClient
 import ubinascii
 import machine
 import json
-f="1.0"
-r=5
-n="pBv1.0/flood_sensors"
-E="pBv1.0/flood_sensors/DCMD"
-h="pBv1.0/flood_sensors/DDATA/"+DEVICE_LOCATION+"/"+DEVICE_NAME
+P="1.0"
+f=5
+G="spBv1.0/flood_sensors"
+j="spBv1.0/flood_sensors/DCMD"
+S="spBv1.0/flood_sensors/DDATA/"+DEVICE_LOCATION+"/"+DEVICE_NAME
 if ANALOG_SENSOR_PIN!="":
  from machine import ADC
- I=ADC(ANALOG_SENSOR_PIN)
+ R=ADC(ANALOG_SENSOR_PIN)
 else:
- I=""
+ R=""
 if DIGITAL_SENSOR_PIN!="":
  from machine import Pin
- s=Pin(DIGITAL_SENSOR_PIN,Pin.IN,Pin.PULL_UP)
+ g=Pin(DIGITAL_SENSOR_PIN,Pin.IN,Pin.PULL_UP)
 else:
- s=""
-c=mqtt_broker_address
-p=ubinascii.hexlify(DEVICE_NAME)
-X=b'pBv1.0/flood_sensors/DCMD'
-D=b'pBv1.0/flood_sensors/DDATA/'+DEVICE_LOCATION+'/'+DEVICE_NAME
-print(D)
-Y=0
-x=MQTT_PUBLISH_INTERVAL
+ g=""
+s=mqtt_broker_address
+u=ubinascii.hexlify(DEVICE_NAME)
+V=b'spBv1.0/flood_sensors/DCMD'
+W=b'spBv1.0/flood_sensors/DDATA/'+DEVICE_LOCATION+'/'+DEVICE_NAME
+print(W)
+E=0
+w=MQTT_PUBLISH_INTERVAL
 def sub_cb(topic,msg):
  print((topic,msg))
- if topic==b'pBv1.0/flood_sensors/DCMD':
+ if topic==b'spBv1.0/flood_sensors/DCMD':
   print('ESP received DCMD message')
-  C="\"name\":\"OTA\""
-  w="\"name\":\"status\""
-  d="\"deviceName\":\""+DEVICE_NAME+"\""
-  l="\"deviceName\":\"*\"" 
-  R=msg.decode()
-  if C in R and(d in R or l in R):
+  t="\"name\":\"OTA\""
+  p="\"name\":\"status\""
+  A="\"deviceName\":\""+DEVICE_NAME+"\""
+  Q="\"deviceName\":\"*\"" 
+  b=msg.decode()
+  if t in b and(A in b or Q in b):
    print('ESP received CMD message: OTA')
-   P=json.loads(R)
+   N=json.loads(b)
    from ota import OTAUpdater
-   T="https://raw.githubusercontent.com/learnbanjo/flood-sensor/refs/heads/deploy-test/deploy/"
-   v=P.get("otafiles")
-   U=True
-   R=DEVICE_NAME+" OTA: "+v
+   l="https://raw.githubusercontent.com/learnbanjo/flood-sensor/refs/heads/deploy-test/deploy/"
+   i=N.get("otafiles")
+   n=True
+   b=DEVICE_NAME+" OTA: "+i
    try:
-    W=OTAUpdater(T,v)
-    if W.check_for_updates():
-     if W.download_and_install_update():
-      R+=" updated"
+    C=OTAUpdater(l,i)
+    if C.check_for_updates():
+     if C.download_and_install_update():
+      b+=" updated"
      else:
-      R+=" update failed"
+      b+=" update failed"
     else:
-     R+=" up-to-date" 
-     U=False
-   except Exception as O:
-    R+=" err:"+str(O)+" type:"+str(type(O))
+     b+=" up-to-date" 
+     n=False
+   except Exception as F:
+    b+=" err:"+str(F)+" type:"+str(type(F))
    finally:
-    print(R)
-    K.publish(h,R)
+    print(b)
+    r.publish(S,b)
     time.sleep(5)
-    if U:
+    if n:
      machine.reset() 
-  elif w in R:
+  elif p in b:
    print('ESP received CMD message: status')
-   K.publish(D,create_sensor_message())
+   r.publish(W,create_sensor_message())
 def connect_and_subscribe():
- global p,c,X
- K=MQTTClient(p,c)
- K.set_callback(sub_cb)
- K.connect()
- K.subscribe(X)
- print('Connected to %s MQTT broker, subscribed to %s topic'%(c,X))
- return K
+ global u,s,V
+ r=MQTTClient(u,s)
+ r.set_callback(sub_cb)
+ r.connect()
+ r.subscribe(V)
+ print('Connected to %s MQTT broker, subscribed to %s topic'%(s,V))
+ return r
 def restart_and_reconnect():
  print('Failed to connect to MQTT broker. Reconnecting...')
  time.sleep(10)
  machine.reset()
 def create_sensor_message(error=""):
- global I
- global s
- R="{\"devNm\":\""+DEVICE_NAME+"\",\"devTy\":\""+DEVICE_TYPE+"\",\"AP\":\""+SSID+"\""
- if(I!=""):
-  R=R+",\"AnaR\":\""+str(I.read())+"\""
- if(s!=""):
-  R=R+",\"DigR\":\""+str(s.value())+"\""
+ global R
+ global g
+ b="{\"devNm\":\""+DEVICE_NAME+"\",\"devTy\":\""+DEVICE_TYPE+"\",\"AP\":\""+SSID+"\""
+ if(R!=""):
+  b=b+",\"AnaR\":\""+str(R.read())+"\""
+ if(g!=""):
+  b=b+",\"DigR\":\""+str(g.value())+"\""
  if error!="":
-  R=R+",\"err\":\""+error+"\""
- return R+"}"
+  b=b+",\"err\":\""+error+"\""
+ return b+"}"
 try:
- K=connect_and_subscribe()
+ r=connect_and_subscribe()
 except OSError as e:
  restart_and_reconnect()
 while True:
  try:
-  K.check_msg()
-  if(time.time()-Y)>x:
-   K.publish(D,create_sensor_message())
-   Y=time.time()
+  r.check_msg()
+  if(time.time()-E)>w:
+   r.publish(W,create_sensor_message())
+   E=time.time()
  except OSError as e:
   restart_and_reconnect()
 # Created by pyminifier (https://github.com/liftoff/pyminifier)

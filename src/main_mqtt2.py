@@ -12,9 +12,9 @@ VERSION = "1.0"
 MQTT_CHECK_INTERVAL = 5
 
 # Define topics
-GenericSensorReportTopic = "pBv1.0/flood_sensors"
-OTARequestTopic = "pBv1.0/flood_sensors/DCMD"
-OTAResponseTopic = "pBv1.0/flood_sensors/DDATA/" + DEVICE_LOCATION + "/" + DEVICE_NAME
+GenericSensorReportTopic = "spBv1.0/flood_sensors"
+OTARequestTopic = "spBv1.0/flood_sensors/DCMD"
+OTAResponseTopic = "spBv1.0/flood_sensors/DDATA/" + DEVICE_LOCATION + "/" + DEVICE_NAME
 
 
 if ANALOG_SENSOR_PIN != "":
@@ -32,15 +32,15 @@ else:
 mqtt_server = mqtt_broker_address
 
 client_id = ubinascii.hexlify(DEVICE_NAME)
-topic_sub = b'pBv1.0/flood_sensors/DCMD'
-topic_pub = b'pBv1.0/flood_sensors/DDATA/' + DEVICE_LOCATION + '/' + DEVICE_NAME
+topic_sub = b'spBv1.0/flood_sensors/DCMD'
+topic_pub = b'spBv1.0/flood_sensors/DDATA/' + DEVICE_LOCATION + '/' + DEVICE_NAME
 print (topic_pub)
 last_message = 0
 message_interval = MQTT_PUBLISH_INTERVAL
 
 def sub_cb(topic, msg):
   print((topic, msg))
-  if topic == b'pBv1.0/flood_sensors/DCMD':
+  if topic == b'spBv1.0/flood_sensors/DCMD':
     print('ESP received DCMD message')
     cmdOTAString = "\"name\":\"OTA\""
     cmdStatusString = "\"name\":\"status\""
