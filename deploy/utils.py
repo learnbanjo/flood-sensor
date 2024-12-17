@@ -1,15 +1,15 @@
-l="1.0"
+C="1.0"
 import gc
 from machine import RTC
 import ntptime
 def qs_parse(qs):
- n={}
- v=qs.split("&")
- for F in v:
-  g=F.split("=")
-  if len(g)==2:
-   n[g[0]]=g[1]
- return n
+ W={}
+ u=qs.split("&")
+ for d in u:
+  b=d.split("=")
+  if len(b)==2:
+   W[b[0]]=b[1]
+ return W
 def free(full=False):
  gc.collect()
  F=gc.mem_free()
@@ -21,10 +21,10 @@ def free(full=False):
 def get_epoch_time():
  try:
   ntptime.settime() 
-  m=RTC()
-  t=m.datetime()
-  a=(t[0]-1970)*31536000+t[1]*2628000+t[2]*86400+t[3]*3600+t[4]*60+t[5]
-  return a
+  Y=RTC()
+  t=Y.datetime()
+  A=(t[0]-1970)*31536000+t[1]*2628000+t[2]*86400+t[3]*3600+t[4]*60+t[5]
+  return A
  except OSError:
   print("Error: Could not synchronize with NTP server.")
   return None
