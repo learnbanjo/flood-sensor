@@ -6,110 +6,110 @@ import json
 import machine
 import time
 from umqtt.simple import MQTTClient
-D="1.0"
-t="spBv1.0/"+SPARKPLUGB_GID
-M=t+"/DCMD"
-R=t+"/DDATA/"+SPARKPLUGB_EONID+"/"+DEVICE_NAME
-i=t+"/DBIRTH/"+SPARKPLUGB_EONID+"/"+DEVICE_NAME
-B=t+"/DDEATH/"+SPARKPLUGB_EONID+"/"+DEVICE_NAME
-K=5
-L=-1 
-V=1 
-h=2 
-T=DEVICE_NAME.encode()
-g=", \"device_id\": \""+DEVICE_NAME+"\""
-v=M.encode()
-F=R.encode()
-o=0
-def reboot_with_reason(n,reason=0):
- G=get_sparkplug_prefx()+",\"ddeath_reasons\": \""+str(reason)+"\"}"
- n.publish(B.encode(),G.encode)
- n.disconnect()
+h="1.0"
+H="spBv1.0/"+SPARKPLUGB_GID
+E=H+"/DCMD"
+O=H+"/DDATA/"+SPARKPLUGB_EONID+"/"+DEVICE_NAME
+I=H+"/DBIRTH/"+SPARKPLUGB_EONID+"/"+DEVICE_NAME
+T=H+"/DDEATH/"+SPARKPLUGB_EONID+"/"+DEVICE_NAME
+v=5
+k=-1 
+U=1 
+g=2 
+M=DEVICE_NAME.encode()
+q=", \"device_id\": \""+DEVICE_NAME+"\""
+W=E.encode()
+r=O.encode()
+i=0
+def reboot_with_reason(w,reason=0):
+ Q=get_sparkplug_prefx()+",\"ddeath_reasons\": \""+str(reason)+"\"}"
+ w.publish(T.encode(),Q.encode)
+ w.disconnect()
  time.sleep(5)
  machine.reset() 
 def get_sparkplug_prefx():
- global o
- if o>=2147483647:
-  o=0
- o+=1
- return "{\"timestamp: \""+str(get_epoch_time())+g+",\"seq\": \""+str(o)+"\""
+ global i
+ if i>=2147483647:
+  i=0
+ i+=1
+ return "{\"timestamp: \""+str(get_epoch_time())+q+",\"seq\": \""+str(i)+"\""
 def sub_cb(topic,msg):
- if topic==v:
-  E="\"device_id\":\""+DEVICE_NAME+"\""
-  G=msg.decode()
-  if(E in G or "\"device_id\":\"*\"" in G):
-   if "\"cmdID\":\"OTA\"" in G:
-    m=json.loads(G)
+ if topic==W:
+  X="\"device_id\":\""+DEVICE_NAME+"\""
+  Q=msg.decode()
+  if(X in Q or "\"device_id\":\"*\"" in Q):
+   if "\"cmdID\":\"OTA\"" in Q:
+    N=json.loads(Q)
     from ota import OTAUpdater
-    X="https://raw.githubusercontent.com/learnbanjo/flood-sensor/refs/heads/deploy-test/deploy/"
-    p=m['payload'][0]['otafiles']
+    j="https://raw.githubusercontent.com/learnbanjo/flood-sensor/refs/heads/deploy-test/deploy/"
+    m=N['payload'][0]['otafiles']
     S=True
-    G=DEVICE_NAME+" OTA: "+p
+    Q=DEVICE_NAME+" OTA: "+m
     try:
-     k=OTAUpdater(X,p)
-     if k.check_for_updates():
-      if k.download_and_install_update():
-       G+=" updated"
+     x=OTAUpdater(j,m)
+     if x.check_for_updates():
+      if x.download_and_install_update():
+       Q+=" updated"
       else:
-       G+=" update failed"
+       Q+=" update failed"
      else:
-      G+=" up-to-date" 
+      Q+=" up-to-date" 
       S=False
-    except Exception as U:
-     G+=" err:"+str(U)+" type:"+str(type(U))
+    except Exception as F:
+     Q+=" err:"+str(F)+" type:"+str(type(F))
     finally:
-     print(G)
-     n.publish(R,G)
+     print(Q)
+     w.publish(O,Q)
      if S:
-      reboot_with_reason(n,h)
-   elif "\"cmdID\":\"status\"" in G:
-    n.publish(F,create_sensor_message())
-   elif "\"cmdID\":\"reset\"" in G:
-    reboot_with_reason(n,V)
+      reboot_with_reason(w,g)
+   elif "\"cmdID\":\"status\"" in Q:
+    w.publish(r,create_sensor_message())
+   elif "\"cmdID\":\"reset\"" in Q:
+    reboot_with_reason(w,U)
 def connect_and_subscribe():
- global T,v
- n=MQTTClient(T,MQTT_BROKER_ADD)
- n.set_callback(sub_cb)
- G=get_sparkplug_prefx()+",\"ddeath_reasons\": \"-1\"}"
- n.set_last_will(B,G.encode())
- n.connect()
- n.subscribe(v)
- a=get_sparkplug_prefx()+"}"
- n.publish(i.encode(),a.encode())
- return n
+ global M,W
+ w=MQTTClient(M,MQTT_BROKER_ADD)
+ w.set_callback(sub_cb)
+ Q=get_sparkplug_prefx()+",\"ddeath_reasons\": \"-1\"}"
+ w.set_last_will(T,Q.encode())
+ w.connect()
+ w.subscribe(W)
+ P=get_sparkplug_prefx()+"}"
+ w.publish(I.encode(),P.encode())
+ return w
 def restart_and_reconnect():
  time.sleep(10)
  machine.reset()
 def create_sensor_message(error=""):
- global Q
- global C
- G=get_sparkplug_prefx()+",\"devNm\":\""+DEVICE_NAME+"\",\"devTy\":\""+DEVICE_TYPE+"\",\"AP\":\""+SSID+"\""
- if(Q!=""):
-  G=G+",\"AnaR\":\""+str(Q.read())+"\""
- if(C!=""):
-  G=G+",\"DigR\":\""+str(C.value())+"\""
+ global n
+ global K
+ Q=get_sparkplug_prefx()+",\"devNm\":\""+DEVICE_NAME+"\",\"devTy\":\""+DEVICE_TYPE+"\",\"AP\":\""+SSID+"\""
+ if(n!=""):
+  Q=Q+",\"AnaR\":\""+str(n.read())+"\""
+ if(K!=""):
+  Q=Q+",\"DigR\":\""+str(K.value())+"\""
  if error!="":
-  G=G+",\"err\":\""+error+"\""
- return G+"}"
-Q=""
+  Q=Q+",\"err\":\""+error+"\""
+ return Q+"}"
+n=""
 if ANALOG_SENSOR_PIN!="":
  from machine import ADC
- Q=ADC(ANALOG_SENSOR_PIN)
-C=""
+ n=ADC(ANALOG_SENSOR_PIN)
+K=""
 if DIGITAL_SENSOR_PIN!="":
  from machine import Pin
- C=Pin(DIGITAL_SENSOR_PIN,Pin.IN,Pin.PULL_UP)
+ K=Pin(DIGITAL_SENSOR_PIN,Pin.IN,Pin.PULL_UP)
 try:
- n=connect_and_subscribe()
+ w=connect_and_subscribe()
 except OSError as e:
  restart_and_reconnect()
-I=0
+y=0
 while True:
  try:
-  n.check_msg()
-  if(time.time()-I)>MQTT_PUBLISH_INTERVAL:
-   n.publish(F,create_sensor_message().encode())
-   I=time.time()
+  w.check_msg()
+  if(time.time()-y)>MQTT_PUBLISH_INTERVAL:
+   w.publish(r,create_sensor_message().encode())
+   y=time.time()
  except Exception as e:
   restart_and_reconnect()
 # Created by pyminifier (https://github.com/liftoff/pyminifier)
