@@ -2,74 +2,74 @@ import urequests
 import os
 import gc
 import json
-t="1.0"
+Q="1.0"
 class OTAUpdater:
- def __init__(A,B,j):
-  A.filename=j
-  A.repo_url=B
-  A.version_file=j+'_'+'ver.json'
-  A.version_url=A.process_version_url(B,j) 
-  A.firmware_url=B+j 
-  print("Version URL is ",A.version_url)
-  print("Firmware URL is ",A.firmware_url)
-  if A.version_file in os.listdir():
-   with open(A.version_file)as f:
-    A.current_version=json.load(f)['version']
-   l="Current "+A.filename+" is "+A.current_version
-   print("version message ",l)
+ def __init__(Y,v,F):
+  Y.filename=F
+  Y.repo_url=v
+  Y.version_file=F+'_'+'ver.json'
+  Y.version_url=Y.process_version_url(v,F) 
+  Y.firmware_url=v+F 
+  print("Version URL is ",Y.version_url)
+  print("Firmware URL is ",Y.firmware_url)
+  if Y.version_file in os.listdir():
+   with open(Y.version_file)as f:
+    Y.current_version=json.load(f)['version']
+   f="Current "+Y.filename+" is "+Y.current_version
+   print("version message ",f)
   else:
    print("No version file")
-   A.current_version="0"
-   with open(A.version_file,'w')as f:
-    json.dump({'version':A.current_version},f)
- def process_version_url(A,B,j):
-  q=B.replace("raw.githubusercontent.com","github.com") 
+   Y.current_version="0"
+   with open(Y.version_file,'w')as f:
+    json.dump({'version':Y.current_version},f)
+ def process_version_url(Y,v,F):
+  q=v.replace("raw.githubusercontent.com","github.com") 
   q=q.replace("/","§",4) 
   q=q.replace("/","/latest-commit/",1) 
   q=q.replace("§","/",4) 
-  q=q+j 
+  q=q+F 
   return q
- def fetch_latest_code(A)->bool:
-  m=urequests.get(A.firmware_url,timeout=20)
-  if m.status_code==200:
+ def fetch_latest_code(Y)->bool:
+  l=urequests.get(Y.firmware_url,timeout=20)
+  if l.status_code==200:
    gc.collect()
    try:
-    A.latest_code=m.text
+    Y.latest_code=l.text
     return True
    except Exception as e:
     print('Failed to fetch latest code:',e)
     return False
-  elif m.status_code==404:
+  elif l.status_code==404:
    print('Firmware not found.')
    return False
- def update_no_reset(A):
+ def update_no_reset(Y):
   with open('latest_code.py','w')as f:
-   f.write(A.latest_code)
-  A.current_version=A.latest_version
-  with open(A.version_file,'w')as f:
-   json.dump({'version':A.current_version},f)
-  A.latest_code=None
-  os.rename('latest_code.py',A.filename)
- def check_for_updates(A):
+   f.write(Y.latest_code)
+  Y.current_version=Y.latest_version
+  with open(Y.version_file,'w')as f:
+   json.dump({'version':Y.current_version},f)
+  Y.latest_code=None
+  os.rename('latest_code.py',Y.filename)
+ def check_for_updates(Y):
   print('Checking for latest version...')
   gc.collect()
-  h={"accept":"application/json"}
-  m=urequests.get(A.version_url,headers=h,timeout=5)
-  J=json.loads(m.text)
-  A.latest_version=J['oid'] 
-  o=True if A.current_version!=A.latest_version else False
-  V="New ver: "+str(o)
-  print(V) 
-  return o
- def download_and_install_update_if_available(A):
-  if A.check_for_updates():
-   return A.download_and_install_update()
+  R={"accept":"application/json"}
+  l=urequests.get(Y.version_url,headers=R,timeout=5)
+  H=json.loads(l.text)
+  Y.latest_version=H['oid'] 
+  C=True if Y.current_version!=Y.latest_version else False
+  r="New ver: "+str(C)
+  print(r) 
+  return C
+ def download_and_install_update_if_available(Y):
+  if Y.check_for_updates():
+   return Y.download_and_install_update()
   else:
    print('No new updates available.')
    return True
- def download_and_install_update(A):
-  if A.fetch_latest_code():
-   A.update_no_reset()
+ def download_and_install_update(Y):
+  if Y.fetch_latest_code():
+   Y.update_no_reset()
   else:
    return False
   return True
