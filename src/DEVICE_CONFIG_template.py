@@ -1,12 +1,12 @@
-DEVICE_NAME = "device host name" # Descriptive name for the device
-DEVICE_TYPE = "Flood Sensor" # Sensor Type. "Flood Sensor", "Pressure Sensor"
+DEVICE_NAME = "FS_bh_basement" # Descriptive name for the device
+DEVICE_TYPE = "flood_sensor" # Sensor Type. "Flood Sensor", "Pressure Sensor"
 DEVICE_KEY = "" #device private key for future use cases
+SPARKPLUGB_GID = "flood_sensor"  # Sparkplug B Group ID, usually is device type
+SPARKPLUGB_EONID = "bh" # Sparkplug B Edge of Network ID, usually is building name
 SSID = "my wifi hotspot name"
 PASSWORD = "wifi password" #Use "" for no password
-ANALOG_SENSOR_PIN = 0 # ESP8266 ADC pin is 0. Set to "" to disable
-DIGITAL_SENSOR_PIN = 5 # ESP8266 GPIO pin is D1 (GPIO5). Set to "" to disable. See https://electropeak.com/learn/esp8266-pinout-reference-how-to-use-esp8266-gpio-pins/
 
-MQTT_PUBLISH_INTERVAL = 30
-mqtt_broker_address = "127.0.0.1"
-mqtt_broker_port = 1883
-mqtt_keep_alive_time = 360
+MQTT_PUBLISH_INTERVAL = 300
+MQTT_BROKER_ADD = "127.0.0.1"
+MQTT_BROKER_PORT = 1883
+MQTT_KEEP_ALIVE_TIME = 360
